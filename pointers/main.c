@@ -45,44 +45,6 @@ int str_size(char *arr_s)
     return i;
 }
 
-char *strsrch(char *pointer, char ch)
-{
-    char *ret_pointer = NULL;
-    for (int i = 0; (pointer[i] != '\0'); i++)
-    {
-        if (pointer[i] == ch)
-            ret_pointer = &pointer[i];
-    }
-    return ret_pointer;
-}
-
-char *f_strsrch(char *pointer, char ch)
-{
-    char *ret_pointer = NULL;
-    for (int i = 0; (pointer[i] != '\0'); i++)
-    {
-        if (pointer[i] == ch)
-        {
-            ret_pointer = &pointer[i];
-            break;
-        }
-    }
-    return ret_pointer;
-}
-
-// Obtem se os n ultimos elementos de str_1 sao iguais a str_2
-int verf_condition(char *str_1, int size_1, char *str_2, int size_2)
-{
-    if (size_1 < size_2)
-        return 0;
-    for (int i = size_1 - size_2, j = 0; i < size_1; i++, j++)
-    {
-        if (str_1[i] != str_2[j])
-            return 0;
-    }
-    return 1;
-}
-
 void to_lower(char *str)
 {
     // Varre todo o vetor até o terminador de string
@@ -131,7 +93,7 @@ char *get_code(char *target_str)
         while (target_str[i] == ' ')
             i++;
 
-        printf("Fct  : %c | Pos : %d | Vet_Pos : %d \n", target_str[i], i, vet_pos);
+        // printf("Fct  : %c | Pos : %d | Vet_Pos : %d \n", target_str[i], i, vet_pos);
         target_str[vet_pos] = target_str[i];
 
         // Get next space
@@ -290,24 +252,143 @@ void gen_norepeat(int *array, int size)
     }
 }
 
+void bubble_sort(int *array, int size)
+{
+    int operations = 1;
+    while (operations)
+    {
+        operations = 0;
+        for (int i = 0; i < size - 1; i++)
+        {
+            if (array[i] > array[i + 1])
+            {
+                operations = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = operations;
+            }
+        }
+    }
+}
+
+int get_number_o(int *array, int size, int number)
+{
+    int occur = 0;
+    for (int i = 0; i < size; i++)
+    {
+        if (array[i] == number)
+            occur += 1;
+    }
+    return occur;
+}
+
+void get_vet_o(int *array, int size)
+{
+    // Aloca um vetor auxiliar dinamicamente
+    int *aux_vet = malloc(sizeof(int) * size);
+    memset(aux_vet, 0, size);
+    int aux_pos = 0;
+    // Varre o vetor em busca de elementos nao repetidos
+    for (int i = 0; i < size; i++)
+    {
+        if (!check_repeat(aux_vet, size, array[i], -1))
+        {
+            aux_vet[aux_pos] = array[i];
+            aux_pos++;
+        }
+    }
+    print_vector("Aux", aux_vet, aux_pos);
+
+    bubble_sort(aux_vet, aux_pos);
+
+    print_vector("Aux", aux_vet, aux_pos);
+    for (int i = 0; i < aux_pos; i++)
+        printf("%d aparece %d vez(es)\n",
+               aux_vet[i],
+               get_number_o(array, size, aux_vet[i]));
+    free(aux_vet);
+}
+
+void str_cpy(char *dest, char *src)
+{
+    int i = 0;
+    for (; src[i] != '\0'; i++)
+        dest[i] = src[i];
+    dest[i] = '\0';
+}
+
+void remove_occur(char *str, char ch)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        while (str[i] == ch)
+            str_cpy(&str[i], &str[i + 1]);
+    }
+}
+
+int str_srch(char *str, char ch)
+{
+    for (int i = 0; str[i] != '\0'; i++)
+        if (str[i] == ch)
+            return i;
+    return 0;
+}
+
+void remove_all_rep(char *str)
+{
+    int rep_pos = 0;
+    for (int i = 0; str[i] != '\0'; i++)
+    {
+        // Verifica se o caractere é diferente de espaço
+        if (str[i] != ' ')
+        {
+            // Verifica se há alguma repetição no vetor
+            while ((rep_pos = str_srch(&str[i + 1], str[i])))
+            {
+                rep_pos += i + 1;
+                printf("%c | %d | %d \n", str[i], i, rep_pos);
+                remove_occur(&str[rep_pos], str[i]);
+            }
+        }
+    }
+}
+
+int str_n_comp(char *dest, char *src, int size)
+{
+    for (int i = 0; i < size; i++)
+    {
+        if (dest[i] != src[i])
+            return 0;
+    }
+    return 1;
+}
+
+int check_vet(char *dest, char *src)
+{
+    int cmp_size = str_size(src);
+    int cont_res = 0;
+    for (int i = 0; dest[i] != '\0' && str_size(&dest[i]) >= cmp_size;)
+    {
+        printf("%d %c \n", i, dest[i]);
+        if (str_n_comp(&dest[i], src, cmp_size))
+            cont_res++;
+        i++;
+    }
+    return cont_res;
+}
+
 int main()
 {
-    int test_cases = 0;
-    printf("Digite o numero de casos : ");
-    test_cases = getchar() - 0x30;
-    printf("%d \n", test_cases);
-    while (getchar() != '\n')
-        ;
+    char *main_str = malloc(sizeof(char) * 300);
+    char *sub_str_main = malloc(sizeof(char) * 300);
+    printf("Digite: ");
+    gets(main_str);
+    printf("Digite a sub_string: ");
+    gets(sub_str_main);
 
-    char *str_main = malloc(sizeof(char) * 100);
-    for (int cases = 0; cases < test_cases; cases++)
-    {
-        printf("Digite a string : ");
-        fgets(str_main, 100, stdin);
-        str_main = get_code(str_main);
-        printf("%s\n", str_main);
-    }
+    int result = check_vet(main_str, sub_str_main);
 
-    free(str_main);
+    printf("Resultado = %d \n", result);
+
+    free(main_str);
     return 0;
 }
