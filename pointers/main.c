@@ -362,30 +362,29 @@ int str_n_comp(char *dest, char *src, int size)
     return 1;
 }
 
-int check_vet(char *dest, char *src)
+int check_palin(char *dest)
 {
-    int cmp_size = str_size(src);
-    int cont_res = 0;
-    for (int i = 0; dest[i] != '\0' && str_size(&dest[i]) >= cmp_size;)
+    int j = 0;
+
+    for( ; dest[j+1] != '\0'; j++);
+
+    for(int i = 0; dest[i] != '\0';i++, j--)
     {
-        printf("%d %c \n", i, dest[i]);
-        if (str_n_comp(&dest[i], src, cmp_size))
-            cont_res++;
-        i++;
+        if(dest[i] != dest[j])
+            return 0;
     }
-    return cont_res;
+
+    return 1;
 }
+
 
 int main()
 {
     char *main_str = malloc(sizeof(char) * 300);
-    char *sub_str_main = malloc(sizeof(char) * 300);
     printf("Digite: ");
-    gets(main_str);
-    printf("Digite a sub_string: ");
-    gets(sub_str_main);
+    gets(main_str);    
 
-    int result = check_vet(main_str, sub_str_main);
+    int result = check_palin(main_str);
 
     printf("Resultado = %d \n", result);
 
